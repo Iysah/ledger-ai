@@ -219,22 +219,26 @@ const AddExpenseScreen: React.FC = () => {
         {/* Date Picker */}
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Date</Text>
-          <TouchableOpacity
-            style={styles.dateButton}
-            onPress={() => setShowDatePicker(true)}
-          >
-            <Text style={styles.dateText}>
-              {formData.date.toLocaleDateString()}
-            </Text>
-          </TouchableOpacity>
-          {showDatePicker && (
-            <DateTimePicker
-              value={formData.date}
-              mode="date"
-              display="default"
-              onChange={handleDateChange}
-            />
-          )}
+          <View style={styles.dateContainer}>
+            <TouchableOpacity
+              style={styles.dateButton}
+              onPress={() => setShowDatePicker(true)}
+            >
+              <Text style={styles.dateText}>
+                {formData.date.toLocaleDateString()}
+              </Text>
+            </TouchableOpacity>
+            {showDatePicker && (
+              <View style={styles.datePickerContainer}>
+                <DateTimePicker
+                  value={formData.date}
+                  mode="date"
+                  display="default"
+                  onChange={handleDateChange}
+                />
+              </View>
+            )}
+          </View>
         </View>
 
         {/* Receipt Image */}
@@ -340,7 +344,13 @@ const createStyles = (colors: typeof Colors.light) =>
       minHeight: 80,
       textAlignVertical: 'top',
     },
+    dateContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+    },
     dateButton: {
+      flex: 1,
       backgroundColor: colors.surface,
       borderRadius: 12,
       borderWidth: 1,
@@ -350,6 +360,10 @@ const createStyles = (colors: typeof Colors.light) =>
     dateText: {
       fontSize: 16,
       color: colors.text,
+    },
+    datePickerContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
     },
     imageContainer: {
       alignItems: 'center',

@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, useColorScheme } from 'react-native';
+import { Home, Plus, BarChart3 } from 'lucide-react-native';
 import { Colors } from '../constants/colors';
 
 // Screens
@@ -42,7 +43,9 @@ const MainTabs = () => {
         options={{
           title: 'Expenses',
           tabBarLabel: 'Home',
-          tabBarIcon: () => null, // Simple text-only tabs
+          tabBarIcon: ({ color, size }) => (
+            <Home size={size} color={color} />
+          ),
         }}
       />
       <Tab.Screen
@@ -51,7 +54,9 @@ const MainTabs = () => {
         options={{
           title: 'Add Expense',
           tabBarLabel: 'Add',
-          tabBarIcon: () => null,
+          tabBarIcon: ({ color, size }) => (
+            <Plus size={size} color={color} />
+          ),
         }}
       />
       <Tab.Screen
@@ -60,7 +65,9 @@ const MainTabs = () => {
         options={{
           title: 'Reports',
           tabBarLabel: 'Reports',
-          tabBarIcon: () => null,
+          tabBarIcon: ({ color, size }) => (
+            <BarChart3 size={size} color={color} />
+          ),
         }}
       />
     </Tab.Navigator>
