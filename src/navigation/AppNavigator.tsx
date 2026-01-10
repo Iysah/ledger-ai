@@ -38,17 +38,6 @@ const MainTabs = () => {
       }}
     >
       <Tab.Screen
-        name="Home"
-        component={ExpenseListScreen}
-        options={{
-          title: 'Expenses',
-          tabBarLabel: 'Home',
-          tabBarIcon: ({ color, size }) => (
-            <Home size={size} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
         name="AddExpense"
         component={AddExpenseScreen}
         options={{
@@ -56,6 +45,17 @@ const MainTabs = () => {
           tabBarLabel: 'Add',
           tabBarIcon: ({ color, size }) => (
             <Plus size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Home"
+        component={ExpenseListScreen}
+        options={{
+          title: 'Expenses',
+          tabBarLabel: 'Home',
+          tabBarIcon: ({ color, size }) => (
+            <Home size={size} color={color} />
           ),
         }}
       />

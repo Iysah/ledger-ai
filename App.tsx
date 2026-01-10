@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Toaster } from 'sonner-native';
 import AppNavigator from './src/navigation/AppNavigator';
 import { initDatabase } from './src/database/db';
 import { useExpenseStore } from './src/store/expenseStore';
@@ -31,10 +33,13 @@ export default function App() {
   }, []);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-      <AppNavigator />
-    </GestureHandlerRootView>
+    <SafeAreaProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+        <AppNavigator />
+        <Toaster />
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
   );
 }
 

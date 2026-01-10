@@ -8,11 +8,11 @@ import {
   useColorScheme,
   ScrollView,
   Image,
-  Alert,
   Platform,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
+import { toast } from 'sonner-native';
 import { Colors } from '../constants/colors';
 import { useExpenseStore } from '../store/expenseStore';
 import CategoryPicker from '../components/CategoryPicker';
@@ -74,7 +74,9 @@ const AddExpenseScreen: React.FC = () => {
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
       
       if (permissionResult.granted === false) {
-        Alert.alert('Permission Required', 'Please grant camera roll permissions to attach receipts.');
+        toast.error('Permission Required', {
+          description: 'Please grant camera roll permissions to attach receipts.',
+        });
         return;
       }
 
@@ -92,7 +94,7 @@ const AddExpenseScreen: React.FC = () => {
         }));
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to pick image');
+      toast.error('Failed to pick image');
     }
   };
 
@@ -101,7 +103,9 @@ const AddExpenseScreen: React.FC = () => {
       const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
       
       if (permissionResult.granted === false) {
-        Alert.alert('Permission Required', 'Please grant camera permissions to take photos.');
+        toast.error('Permission Required', {
+          description: 'Please grant camera permissions to take photos.',
+        });
         return;
       }
 
@@ -118,7 +122,7 @@ const AddExpenseScreen: React.FC = () => {
         }));
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to take photo');
+      toast.error('Failed to take photo');
     }
   };
 
@@ -129,17 +133,23 @@ const AddExpenseScreen: React.FC = () => {
   const handleSubmit = async () => {
     // Validation
     if (!formData.amount || parseFloat(formData.amount) <= 0) {
-      Alert.alert('Invalid Amount', 'Please enter a valid amount');
+      toast.error('Invalid Amount', {
+        description: 'Please enter a valid amount',
+      });
       return;
     }
 
     if (!formData.description.trim()) {
-      Alert.alert('Missing Description', 'Please enter a description');
+      toast.error('Missing Description', {
+        description: 'Please enter a description',
+      });
       return;
     }
 
     if (!formData.category) {
-      Alert.alert('Missing Category', 'Please select a category');
+      toast.error('Missing Category', {
+        description: 'Please select a category',
+      });
       return;
     }
 
@@ -163,9 +173,11 @@ const AddExpenseScreen: React.FC = () => {
         receipt_image_uri: null,
       });
 
-      Alert.alert('Success', 'Expense added successfully');
+      toast.success('Expense added successfully');
     } catch (error) {
-      Alert.alert('Error', 'Failed to add expense. Please try again.');
+      toast.error('Failed to add expense', {
+        description: 'Please try again.',
+      });
     } finally {
       setIsSubmitting(false);
     }
