@@ -3,12 +3,13 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, useColorScheme } from 'react-native';
-import { Home, Plus, BarChart3, Settings, MessageSquare } from 'lucide-react-native';
+import { Home, Plus, BarChart3, Settings, MessageSquare, ChartPie } from 'lucide-react-native';
 import { Colors } from '../constants/colors';
 
 // Screens
 import ExpenseListScreen from '../screens/ExpenseListScreen';
 import AddExpenseScreen from '../screens/AddExpenseScreen';
+import BudgetScreen from '../screens/BudgetScreen';
 import { ChatScreen } from '../screens/ChatScreen';
 import ReportsScreen from '../screens/ReportsScreen';
 import SettingsScreen from '../screens/SettingsScreen';
@@ -63,13 +64,12 @@ const MainTabs = () => {
         }}
       />
       <Tab.Screen
-        name="AddExpense"
-        component={AddExpenseScreen}
+        name="Budget"
+        component={BudgetScreen}
         options={{
-          // title: 'Add Expense',
-          tabBarLabel: 'Add',
+          tabBarLabel: 'Budget',
           tabBarIcon: ({ color, size }) => (
-            <Plus size={size} color={color} />
+            <BarChart3 size={size} color={color} />
           ),
         }}
       />
@@ -92,7 +92,7 @@ const MainTabs = () => {
           // title: 'Reports',
           tabBarLabel: 'Insights',
           tabBarIcon: ({ color, size }) => (
-            <BarChart3 size={size} color={color} />
+            <ChartPie size={size} color={color} />
           ),
         }}
       />
@@ -143,6 +143,14 @@ const AppNavigator = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen
+          name="AddExpense"
+          component={AddExpenseScreen}
+          options={{
+            title: 'Add Expense',
+            presentation: 'modal',
+          }}
+        />
+        <Stack.Screen
           name="EditExpense"
           component={EditExpenseScreen}
           options={{
@@ -169,7 +177,10 @@ const AppNavigator = () => {
         <Stack.Screen
           name="CategoryBudgets"
           component={CategoryBudgetsScreen}
-          options={{ title: 'Category Budgets' }}
+          options={{ 
+            title: 'Category Budgets',
+            headerShown: false,
+          }}
         />
         <Stack.Screen
           name="Premium"

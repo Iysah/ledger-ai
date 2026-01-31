@@ -5,6 +5,14 @@ export interface Category {
   color: string;
 }
 
+export interface Budget {
+  id?: number;
+  category: string;
+  amount: number;
+  period: string; // 'monthly' | 'weekly' etc.
+  updatedAt?: string;
+}
+
 export interface Expense {
   id: number;
   amount: number;

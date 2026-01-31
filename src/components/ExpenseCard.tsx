@@ -4,6 +4,7 @@ import { Expense } from '../types';
 import { Colors } from '../constants/colors';
 import { formatCurrency, formatDate } from '../utils/formatting';
 import { useExpenseStore } from '../store/expenseStore';
+import { useSettingsStore } from '../store/settingsStore';
 
 interface ExpenseCardProps {
   expense: Expense;
@@ -17,6 +18,8 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({ expense, onPress }) => {
   const colorScheme = useColorScheme();
   const colors = colorScheme === 'dark' ? Colors.dark : Colors.light;
   const { categories } = useExpenseStore();
+  // Subscribe to currency changes to trigger re-render
+  useSettingsStore(state => state.currency);
 
   // Find category color
   const category = categories.find((cat) => cat.name === expense.category);

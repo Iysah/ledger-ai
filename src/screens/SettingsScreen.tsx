@@ -152,14 +152,7 @@ const SettingsScreen = () => {
             styles={styles}
           />
           <SettingsItem 
-            icon={PieChart} 
-            label="Category Budgets" 
-            onPress={() => navigation.navigate('CategoryBudgets')} 
-            colors={colors}
-            styles={styles}
-          />
-          <SettingsItem 
-            icon={Palette} 
+            icon={Palette}  
             label="Select Theme" 
             onPress={() => setActiveModal('theme')} 
             colors={colors}

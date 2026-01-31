@@ -1,32 +1,35 @@
 import React from 'react';
-import { View, Text, StyleSheet, useColorScheme } from 'react-native';
+import { View, StyleSheet, useColorScheme, ScrollView, Text } from 'react-native';
 import { Colors } from '../../constants/colors';
+import CategoryList from '../../components/CategoryList';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const CategoryBudgetsScreen = () => {
   const colorScheme = useColorScheme();
   const colors = colorScheme === 'dark' ? Colors.dark : Colors.light;
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Text style={[styles.text, { color: colors.text }]}>Category Budgets</Text>
-      <Text style={[styles.subText, { color: colors.textSecondary }]}>Coming Soon</Text>
-    </View>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <Text style={[styles.title, { color: colors.text }]}>Category Budgets</Text>
+        <CategoryList />
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
-  text: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  scrollContent: {
+    paddingVertical: 16,
   },
-  subText: {
-    marginTop: 8,
-    fontSize: 16,
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
+    marginBottom: 24,
+    paddingHorizontal: 16,
   },
 });
 

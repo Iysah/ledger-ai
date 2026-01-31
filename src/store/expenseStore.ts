@@ -1,10 +1,12 @@
 import { create } from 'zustand';
-import { Expense, Category, FilterOptions } from '../types';
+import { Expense, Category, FilterOptions, Budget } from '../types';
 import * as db from '../database/db';
 
 interface ExpenseStore {
   expenses: Expense[];
   categories: Category[];
+  budgets: Budget[];
+  categorySpends: Record<string, number>;
   filteredExpenses: Expense[];
   isLoading: boolean;
   error: string | null;
@@ -13,8 +15,10 @@ interface ExpenseStore {
   // Actions
   loadExpenses: () => Promise<void>;
   loadCategories: () => Promise<void>;
+  loadBudgets: () => Promise<void>;
   addCategory: (category: Omit<Category, 'id'>) => Promise<void>;
   deleteCategory: (id: number) => Promise<void>;
+  setBudget: (category: string, amount: number) => Promise<void>;
   addExpense: (expense: Omit<Expense, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
   updateExpense: (id: number, expense: Partial<Expense>) => Promise<void>;
   deleteExpense: (id: number) => Promise<void>;
@@ -26,6 +30,8 @@ interface ExpenseStore {
 export const useExpenseStore = create<ExpenseStore>((set, get) => ({
   expenses: [],
   categories: [],
+  budgets: [],
+  categorySpends: {},
   filteredExpenses: [],
   isLoading: false,
   error: null,
@@ -43,6 +49,20 @@ export const useExpenseStore = create<ExpenseStore>((set, get) => ({
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to load expenses';
       set({ error: errorMessage, isLoading: false });
+    }
+  },
+
+  loadBudgets: async () => {
+    // Don't set global loading here to avoid flickering if expenses load fast
+    try {
+      const [budgets, categorySpends] = await Promise.all([
+        db.getAllBudgets(),
+        db.getAllCategorySpends()
+      ]);
+      set({ budgets, categorySpends });
+    } catch (error) {
+      console.error('Failed to load budgets', error);
+      // Fail silently for budgets as it's secondary data
     }
   },
 
@@ -77,6 +97,17 @@ export const useExpenseStore = create<ExpenseStore>((set, get) => ({
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to delete category';
       set({ error: errorMessage, isLoading: false });
+    }
+  },
+
+  setBudget: async (category, amount) => {
+    // We don't set global loading here to keep UI responsive
+    try {
+      await db.setCategoryBudget(category, amount);
+      await get().loadBudgets();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to set budget';
+      set({ error: errorMessage });
     }
   },
 

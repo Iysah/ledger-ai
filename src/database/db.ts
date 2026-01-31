@@ -2,7 +2,7 @@ import { db } from './drizzle';
 import { expenses, categories, messages, budgets } from './schema';
 import { eq, desc, and, gte, lte, sql } from 'drizzle-orm';
 import { PREDEFINED_CATEGORIES } from '../constants/categories';
-import { Category, Expense } from '../types';
+import { Category, Expense, Budget } from '../types';
 
 /**
  * Initialize the SQLite database and create tables
@@ -340,5 +340,51 @@ export const getMonthlyCategorySpend = async (category: string): Promise<number>
   } catch (error) {
     console.error('Error calculating monthly spend:', error);
     return 0;
+  }
+};
+
+/**
+ * Get all budgets
+ */
+export const getAllBudgets = async (): Promise<Budget[]> => {
+  try {
+    const result = await db.select().from(budgets);
+    return result as Budget[];
+  } catch (error) {
+    console.error('Error fetching all budgets:', error);
+    return [];
+  }
+};
+
+/**
+ * Get total spend for all categories in the current month
+ */
+export const getAllCategorySpends = async (): Promise<Record<string, number>> => {
+  try {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString();
+
+    const result = await db.select({
+      category: expenses.category,
+      total: sql<number>`sum(${expenses.amount})`
+    })
+    .from(expenses)
+    .where(
+      and(
+        gte(expenses.date, startOfMonth),
+        lte(expenses.date, endOfMonth)
+      )
+    )
+    .groupBy(expenses.category);
+
+    const spends: Record<string, number> = {};
+    result.forEach(r => {
+      spends[r.category] = r.total || 0;
+    });
+    return spends;
+  } catch (error) {
+    console.error('Error calculating all monthly spends:', error);
+    return {};
   }
 };

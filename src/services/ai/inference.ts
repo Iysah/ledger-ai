@@ -20,17 +20,21 @@ export const useExpenseAI = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   
   const stateRef = useRef<'idle' | 'extracting' | 'rag_gen'>('idle');
+  const processingRef = useRef(false);
   const queryRef = useRef('');
 
   useEffect(() => {
     // We only act when generation finishes
     if (llm.isGenerating) return;
     if (stateRef.current === 'idle') return;
+    if (processingRef.current) return;
 
     const processStep = async () => {
-      const responseText = llm.response;
-      
-      if (stateRef.current === 'extracting') {
+      processingRef.current = true;
+      try {
+        const responseText = llm.response;
+        
+        if (stateRef.current === 'extracting') {
         let parsedResult;
         try {
           const jsonMatch = responseText.match(/\{[\s\S]*\}/);
@@ -98,13 +102,21 @@ export const useExpenseAI = () => {
           const ragPrompt = `Context:\n${contextText}\n\nUser Question: "${queryRef.current}"\nAnswer the question based on the context provided.`;
           
           // Trigger next generation step
-          await llm.generate([{ role: 'user', content: ragPrompt }]);
+          llm.generate([{ role: 'user', content: ragPrompt }]).catch(e => {
+            console.error("RAG generation failed", e);
+            setResult({ type: 'error', content: "Failed to generate answer." });
+            stateRef.current = 'idle';
+            setIsProcessing(false);
+          });
         }
       } else if (stateRef.current === 'rag_gen') {
         // RAG generation finished
         setResult({ type: 'message', content: responseText });
         stateRef.current = 'idle';
         setIsProcessing(false);
+      }
+      } finally {
+        processingRef.current = false;
       }
     };
 
