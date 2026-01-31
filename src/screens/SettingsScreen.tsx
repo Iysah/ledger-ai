@@ -165,13 +165,13 @@ const SettingsScreen = () => {
           <SettingsItem 
             icon={Mail} 
             label="Contact Support" 
-            onPress={() => Alert.alert('Contact Support', 'support@fintrac.app')} 
+            onPress={() => Alert.alert('Contact Support', 'support@monitrac.app')} 
             colors={colors}
             styles={styles}
           />
           <SettingsItem 
             icon={Info} 
-            label="About Fintrac" 
+            label="About Monitrac" 
             onPress={() => navigation.navigate('About')} 
             colors={colors}
             styles={styles}
