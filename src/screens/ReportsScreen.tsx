@@ -25,12 +25,12 @@ const ReportsScreen: React.FC = () => {
 
   // Filter expenses for current month
   const currentMonthExpenses = expenses.filter(expense => {
-    const expenseDate = new Date(expense.date);
     const now = new Date();
-    return (
-      expenseDate.getMonth() === now.getMonth() &&
-      expenseDate.getFullYear() === now.getFullYear()
-    );
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const currentMonthPrefix = `${year}-${month}`;
+    
+    return expense.date.startsWith(currentMonthPrefix);
   });
 
   // Calculate statistics

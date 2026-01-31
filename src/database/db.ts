@@ -321,8 +321,10 @@ export const setCategoryBudget = async (category: string, amount: number): Promi
 export const getMonthlyCategorySpend = async (category: string): Promise<number> => {
   try {
     const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const startOfMonth = `${year}-${month}-01`;
+    const endOfMonth = `${year}-${month}-31`;
 
     const result = await db.select({
       total: sql<number>`sum(${expenses.amount})`
@@ -362,8 +364,10 @@ export const getAllBudgets = async (): Promise<Budget[]> => {
 export const getAllCategorySpends = async (): Promise<Record<string, number>> => {
   try {
     const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const startOfMonth = `${year}-${month}-01`;
+    const endOfMonth = `${year}-${month}-31`;
 
     const result = await db.select({
       category: expenses.category,
