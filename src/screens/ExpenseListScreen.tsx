@@ -9,6 +9,9 @@ import {
   TouchableOpacity,
   Alert,
   TextInput,
+  Modal,
+  TouchableWithoutFeedback,
+  Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -17,6 +20,8 @@ import { Colors } from '../constants/colors';
 import { useExpenseStore } from '../store/expenseStore';
 import ExpenseCard from '../components/ExpenseCard';
 import { Expense } from '../types';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { getIcon } from '../utils/icons';
 
 type RootStackParamList = {
   MainTabs: undefined;
@@ -130,77 +135,15 @@ const ExpenseListScreen: React.FC = () => {
   const styles = createStyles(colors);
 
   return (
-    <View style={styles.container}>
-      {/* Filter Section */}
-      {showFilters && (
-        <View style={styles.filterContainer}>
-          <Text style={styles.filterTitle}>Filter by Category</Text>
-          <View style={styles.categoryFilter}>
-            <TouchableOpacity
-              style={[
-                styles.filterChip,
-                selectedCategory === null && styles.filterChipActive,
-              ]}
-              onPress={() => setSelectedCategory(null)}
-            >
-              <Text
-                style={[
-                  styles.filterChipText,
-                  selectedCategory === null && styles.filterChipTextActive,
-                ]}
-              >
-                All
-              </Text>
-            </TouchableOpacity>
-            {categories.map((cat) => (
-              <TouchableOpacity
-                key={cat.id}
-                style={[
-                  styles.filterChip,
-                  selectedCategory === cat.name && styles.filterChipActive,
-                ]}
-                onPress={() => setSelectedCategory(cat.name)}
-              >
-                <Text
-                  style={[
-                    styles.filterChipText,
-                    selectedCategory === cat.name && styles.filterChipTextActive,
-                  ]}
-                >
-                  {cat.emoji} {cat.name}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-          <View style={styles.filterActions}>
-            <TouchableOpacity
-              style={[styles.filterButton, styles.clearButton]}
-              onPress={handleClearFilters}
-            >
-              <Text style={styles.filterButtonText}>Clear</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.filterButton, styles.applyButton]}
-              onPress={handleApplyFilters}
-            >
-              <Text style={[styles.filterButtonText, styles.applyButtonText]}>
-                Apply
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
-
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>Expenses</Text>
         <TouchableOpacity
           style={styles.filterToggle}
-          onPress={() => setShowFilters(!showFilters)}
+          onPress={() => setShowFilters(true)}
         >
-          <Text style={styles.filterToggleText}>
-            {showFilters ? 'Hide Filters' : 'Filters'}
-          </Text>
+          <Text style={styles.filterToggleText}>Filters</Text>
         </TouchableOpacity>
       </View>
 
@@ -226,7 +169,89 @@ const ExpenseListScreen: React.FC = () => {
           </View>
         }
       />
-    </View>
+
+      {/* Filter Modal */}
+      <Modal
+        visible={showFilters}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowFilters(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <TouchableWithoutFeedback onPress={() => setShowFilters(false)}>
+            <View style={styles.modalBackdrop} />
+          </TouchableWithoutFeedback>
+          <View style={styles.bottomSheet}>
+            <View style={styles.bottomSheetHeader}>
+              <View style={styles.dragHandle} />
+              <Text style={styles.filterTitle}>Filter by Category</Text>
+            </View>
+            <View style={styles.categoryFilter}>
+              <TouchableOpacity
+                style={[
+                  styles.filterChip,
+                  selectedCategory === null && styles.filterChipActive,
+                ]}
+                onPress={() => setSelectedCategory(null)}
+              >
+                <Text
+                  style={[
+                    styles.filterChipText,
+                    selectedCategory === null && styles.filterChipTextActive,
+                  ]}
+                >
+                  All
+                </Text>
+              </TouchableOpacity>
+              {categories.map((cat) => {
+                const Icon = getIcon(cat.icon);
+                return (
+                  <TouchableOpacity
+                    key={cat.id}
+                    style={[
+                      styles.filterChip,
+                      selectedCategory === cat.name && styles.filterChipActive,
+                    ]}
+                    onPress={() => setSelectedCategory(cat.name)}
+                  >
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                      <Icon 
+                        size={14} 
+                        color={selectedCategory === cat.name ? '#FFFFFF' : colors.text} 
+                      />
+                      <Text
+                        style={[
+                          styles.filterChipText,
+                          selectedCategory === cat.name && styles.filterChipTextActive,
+                        ]}
+                      >
+                        {cat.name}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+            <View style={styles.filterActions}>
+              <TouchableOpacity
+                style={[styles.filterButton, styles.clearButton]}
+                onPress={handleClearFilters}
+              >
+                <Text style={styles.filterButtonText}>Clear</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.filterButton, styles.applyButton]}
+                onPress={handleApplyFilters}
+              >
+                <Text style={[styles.filterButtonText, styles.applyButtonText]}>
+                  Apply
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </SafeAreaView>
   );
 };
 
@@ -259,12 +284,6 @@ const createStyles = (colors: typeof Colors.light) =>
       fontSize: 14,
       color: colors.primary,
       fontWeight: '600',
-    },
-    filterContainer: {
-      padding: 16,
-      backgroundColor: colors.surface,
-      borderBottomWidth: 1,
-      borderBottomColor: colors.border,
     },
     filterTitle: {
       fontSize: 16,
@@ -367,6 +386,41 @@ const createStyles = (colors: typeof Colors.light) =>
     emptySubtext: {
       fontSize: 14,
       color: colors.textSecondary,
+    },
+    modalOverlay: {
+      flex: 1,
+      justifyContent: 'flex-end',
+    },
+    modalBackdrop: {
+      flex: 1,
+      // We can't use a background color here with animationType="slide" 
+      // because it will slide up. We keep it transparent.
+    },
+    bottomSheet: {
+      backgroundColor: colors.surface,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      padding: 16,
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: -2,
+      },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 5,
+      paddingBottom: Platform.OS === 'ios' ? 40 : 16,
+    },
+    bottomSheetHeader: {
+      alignItems: 'center',
+      marginBottom: 16,
+    },
+    dragHandle: {
+      width: 40,
+      height: 4,
+      backgroundColor: colors.border,
+      borderRadius: 2,
+      marginBottom: 12,
     },
   });
 

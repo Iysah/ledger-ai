@@ -13,6 +13,8 @@ interface ExpenseStore {
   // Actions
   loadExpenses: () => Promise<void>;
   loadCategories: () => Promise<void>;
+  addCategory: (category: Omit<Category, 'id'>) => Promise<void>;
+  deleteCategory: (id: number) => Promise<void>;
   addExpense: (expense: Omit<Expense, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
   updateExpense: (id: number, expense: Partial<Expense>) => Promise<void>;
   deleteExpense: (id: number) => Promise<void>;
@@ -51,6 +53,30 @@ export const useExpenseStore = create<ExpenseStore>((set, get) => ({
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to load categories';
       set({ error: errorMessage });
+    }
+  },
+
+  addCategory: async (category) => {
+    set({ isLoading: true, error: null });
+    try {
+      await db.addCategory(category);
+      await get().loadCategories();
+      set({ isLoading: false });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to add category';
+      set({ error: errorMessage, isLoading: false });
+    }
+  },
+
+  deleteCategory: async (id) => {
+    set({ isLoading: true, error: null });
+    try {
+      await db.deleteCategory(id);
+      await get().loadCategories();
+      set({ isLoading: false });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete category';
+      set({ error: errorMessage, isLoading: false });
     }
   },
 

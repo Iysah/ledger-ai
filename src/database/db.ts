@@ -1,47 +1,51 @@
-import * as SQLite from 'expo-sqlite';
-import { Expense, Category } from '../types';
+import { db } from './drizzle';
+import { expenses, categories } from './schema';
+import { eq, desc, and, gte, lte, sql } from 'drizzle-orm';
 import { PREDEFINED_CATEGORIES } from '../constants/categories';
-
-let db: SQLite.SQLiteDatabase | null = null;
+import { Category, Expense } from '../types';
 
 /**
  * Initialize the SQLite database and create tables
  */
-export const initDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
-  if (db) {
-    return db;
-  }
-
+export const initDatabase = async () => {
   try {
-    db = await SQLite.openDatabaseAsync('ledger.db');
-    
-    // Create categories table
-    await db.execAsync(`
+    // Ensure tables exist using raw SQL for simplicity in this migration phase
+    // In a full Drizzle setup, we'd use migrations
+    await db.run(sql`
       CREATE TABLE IF NOT EXISTS categories (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL UNIQUE,
-        emoji TEXT NOT NULL,
+        icon TEXT NOT NULL,
         color TEXT NOT NULL
       );
     `);
-
-    // Create expenses table
-    await db.execAsync(`
+    
+    await db.run(sql`
       CREATE TABLE IF NOT EXISTS expenses (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         amount REAL NOT NULL,
         description TEXT NOT NULL,
         category TEXT NOT NULL,
+        merchant TEXT,
         date TEXT NOT NULL,
         receipt_image_uri TEXT,
-        created_at TEXT NOT NULL DEFAULT (datetime('now')),
-        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        embedding TEXT
       );
     `);
 
-    // Seed categories if they don't exist
-    await seedCategories();
+    // Check if we need to migrate existing tables (e.g. add columns)
+    // This is a simplified migration check
+    try {
+      await db.run(sql`ALTER TABLE expenses ADD COLUMN merchant TEXT`);
+    } catch (e) { /* ignore if exists */ }
+    
+    try {
+      await db.run(sql`ALTER TABLE expenses ADD COLUMN embedding TEXT`);
+    } catch (e) { /* ignore if exists */ }
 
+    await seedCategories();
     return db;
   } catch (error) {
     console.error('Error initializing database:', error);
@@ -53,14 +57,21 @@ export const initDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
  * Seed predefined categories into the database
  */
 const seedCategories = async (): Promise<void> => {
-  if (!db) return;
-
   try {
     for (const category of PREDEFINED_CATEGORIES) {
-      await db.runAsync(
-        `INSERT OR IGNORE INTO categories (name, emoji, color) VALUES (?, ?, ?)`,
-        [category.name, category.emoji, category.color]
-      );
+      const existing = await db.select().from(categories).where(eq(categories.name, category.name));
+
+      if (existing.length === 0) {
+        await db.insert(categories).values({
+          name: category.name,
+          icon: category.icon,
+          color: category.color
+        });
+      } else {
+        await db.update(categories)
+          .set({ icon: category.icon, color: category.color })
+          .where(eq(categories.name, category.name));
+      }
     }
   } catch (error) {
     console.error('Error seeding categories:', error);
@@ -72,15 +83,8 @@ const seedCategories = async (): Promise<void> => {
  * Get all categories from the database
  */
 export const getCategories = async (): Promise<Category[]> => {
-  if (!db) {
-    db = await initDatabase();
-  }
-
   try {
-    const result = await db.getAllAsync<Category>(
-      'SELECT * FROM categories ORDER BY name',
-      []
-    );
+    const result = await db.select().from(categories).orderBy(categories.name);
     return result;
   } catch (error) {
     console.error('Error fetching categories:', error);
@@ -89,19 +93,37 @@ export const getCategories = async (): Promise<Category[]> => {
 };
 
 /**
+ * Add a new category
+ */
+export const addCategory = async (category: Omit<Category, 'id'>): Promise<number> => {
+  try {
+    const result = await db.insert(categories).values(category).returning({ insertedId: categories.id });
+    return result[0].insertedId;
+  } catch (error) {
+    console.error('Error adding category:', error);
+    throw error;
+  }
+};
+
+/**
+ * Delete a category
+ */
+export const deleteCategory = async (id: number): Promise<void> => {
+  try {
+    await db.delete(categories).where(eq(categories.id, id));
+  } catch (error) {
+    console.error('Error deleting category:', error);
+    throw error;
+  }
+};
+
+/**
  * Get all expenses from the database
  */
 export const getExpenses = async (): Promise<Expense[]> => {
-  if (!db) {
-    db = await initDatabase();
-  }
-
   try {
-    const result = await db.getAllAsync<Expense>(
-      'SELECT * FROM expenses ORDER BY date DESC, created_at DESC',
-      []
-    );
-    return result;
+    const result = await db.select().from(expenses).orderBy(desc(expenses.date), desc(expenses.createdAt));
+    return result as Expense[];
   } catch (error) {
     console.error('Error fetching expenses:', error);
     throw error;
@@ -112,23 +134,17 @@ export const getExpenses = async (): Promise<Expense[]> => {
  * Add a new expense to the database
  */
 export const addExpense = async (expense: Omit<Expense, 'id' | 'created_at' | 'updated_at'>): Promise<number> => {
-  if (!db) {
-    db = await initDatabase();
-  }
-
   try {
-    const result = await db.runAsync(
-      `INSERT INTO expenses (amount, description, category, date, receipt_image_uri, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
-      [
-        expense.amount,
-        expense.description,
-        expense.category,
-        expense.date,
-        expense.receipt_image_uri || null,
-      ]
-    );
-    return result.lastInsertRowId;
+    const result = await db.insert(expenses).values({
+      amount: expense.amount,
+      description: expense.description,
+      category: expense.category,
+      merchant: expense.merchant,
+      date: expense.date,
+      receiptImageUri: expense.receipt_image_uri,
+      embedding: expense.embedding,
+    }).returning({ insertedId: expenses.id });
+    return result[0].insertedId;
   } catch (error) {
     console.error('Error adding expense:', error);
     throw error;
@@ -139,42 +155,19 @@ export const addExpense = async (expense: Omit<Expense, 'id' | 'created_at' | 'u
  * Update an existing expense
  */
 export const updateExpense = async (id: number, expense: Partial<Omit<Expense, 'id' | 'created_at'>>): Promise<void> => {
-  if (!db) {
-    db = await initDatabase();
-  }
-
   try {
-    const updates: string[] = [];
-    const values: any[] = [];
+    const updateData: any = {};
+    if (expense.amount !== undefined) updateData.amount = expense.amount;
+    if (expense.description !== undefined) updateData.description = expense.description;
+    if (expense.category !== undefined) updateData.category = expense.category;
+    if (expense.merchant !== undefined) updateData.merchant = expense.merchant;
+    if (expense.date !== undefined) updateData.date = expense.date;
+    if (expense.receipt_image_uri !== undefined) updateData.receiptImageUri = expense.receipt_image_uri;
+    if (expense.embedding !== undefined) updateData.embedding = expense.embedding;
+    
+    updateData.updatedAt = sql`CURRENT_TIMESTAMP`;
 
-    if (expense.amount !== undefined) {
-      updates.push('amount = ?');
-      values.push(expense.amount);
-    }
-    if (expense.description !== undefined) {
-      updates.push('description = ?');
-      values.push(expense.description);
-    }
-    if (expense.category !== undefined) {
-      updates.push('category = ?');
-      values.push(expense.category);
-    }
-    if (expense.date !== undefined) {
-      updates.push('date = ?');
-      values.push(expense.date);
-    }
-    if (expense.receipt_image_uri !== undefined) {
-      updates.push('receipt_image_uri = ?');
-      values.push(expense.receipt_image_uri);
-    }
-
-    updates.push("updated_at = datetime('now')");
-    values.push(id);
-
-    await db.runAsync(
-      `UPDATE expenses SET ${updates.join(', ')} WHERE id = ?`,
-      values
-    );
+    await db.update(expenses).set(updateData).where(eq(expenses.id, id));
   } catch (error) {
     console.error('Error updating expense:', error);
     throw error;
@@ -185,12 +178,8 @@ export const updateExpense = async (id: number, expense: Partial<Omit<Expense, '
  * Delete an expense from the database
  */
 export const deleteExpense = async (id: number): Promise<void> => {
-  if (!db) {
-    db = await initDatabase();
-  }
-
   try {
-    await db.runAsync('DELETE FROM expenses WHERE id = ?', [id]);
+    await db.delete(expenses).where(eq(expenses.id, id));
   } catch (error) {
     console.error('Error deleting expense:', error);
     throw error;
@@ -205,36 +194,19 @@ export const getFilteredExpenses = async (
   startDate: string | null,
   endDate: string | null
 ): Promise<Expense[]> => {
-  if (!db) {
-    db = await initDatabase();
-  }
-
   try {
-    let query = 'SELECT * FROM expenses WHERE 1=1';
-    const params: any[] = [];
+    const conditions = [];
+    if (category) conditions.push(eq(expenses.category, category));
+    if (startDate) conditions.push(gte(expenses.date, startDate));
+    if (endDate) conditions.push(lte(expenses.date, endDate));
 
-    if (category) {
-      query += ' AND category = ?';
-      params.push(category);
-    }
-
-    if (startDate) {
-      query += ' AND date >= ?';
-      params.push(startDate);
-    }
-
-    if (endDate) {
-      query += ' AND date <= ?';
-      params.push(endDate);
-    }
-
-    query += ' ORDER BY date DESC, created_at DESC';
-
-    const result = await db.getAllAsync<Expense>(query, params);
-    return result;
+    const result = await db.select().from(expenses)
+      .where(and(...conditions))
+      .orderBy(desc(expenses.date), desc(expenses.createdAt));
+      
+    return result as Expense[];
   } catch (error) {
     console.error('Error fetching filtered expenses:', error);
     throw error;
   }
 };
-

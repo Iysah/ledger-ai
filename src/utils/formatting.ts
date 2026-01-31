@@ -1,11 +1,21 @@
+import { useSettingsStore } from '../store/settingsStore';
+
 /**
  * Format currency amount
+ * Uses manual formatting to ensure the symbol is always used instead of the ISO code
  */
 export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
+  const { currency } = useSettingsStore.getState();
+  
+  // Format the number part first
+  const numberPart = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(amount);
+  
+  // Combine symbol and formatted number
+  // e.g., "₦ 1,234.56"
+  return `${currency.symbol} ${numberPart}`;
 };
 
 /**
@@ -26,4 +36,3 @@ export const formatDate = (dateString: string): string => {
 export const formatDateISO = (date: Date): string => {
   return date.toISOString().split('T')[0];
 };
-

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, useColorScheme, ScrollView } 
 import { Category } from '../types';
 import { Colors } from '../constants/colors';
 import { useExpenseStore } from '../store/expenseStore';
+import { getIcon } from '../utils/icons';
 
 interface CategoryPickerProps {
   selectedCategory: string;
@@ -28,27 +29,37 @@ const CategoryPicker: React.FC<CategoryPickerProps> = ({
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.container}
     >
-      {categories.map((category) => (
-        <TouchableOpacity
-          key={category.id}
-          style={[
-            styles.categoryButton,
-            selectedCategory === category.name && styles.selectedCategory,
-            { borderColor: category.color },
-          ]}
-          onPress={() => onSelectCategory(category.name)}
-        >
-          <Text style={styles.emoji}>{category.emoji}</Text>
-          <Text
+      {categories.map((category) => {
+        const Icon = getIcon(category.icon);
+        const isSelected = selectedCategory === category.name;
+        
+        return (
+          <TouchableOpacity
+            key={category.id}
             style={[
-              styles.categoryName,
-              selectedCategory === category.name && styles.selectedText,
+              styles.categoryButton,
+              isSelected && styles.selectedCategory,
+              { borderColor: category.color },
             ]}
+            onPress={() => onSelectCategory(category.name)}
           >
-            {category.name}
-          </Text>
-        </TouchableOpacity>
-      ))}
+            <View style={styles.iconContainer}>
+              <Icon 
+                size={20} 
+                color={isSelected ? colors.primary : category.color} 
+              />
+            </View>
+            <Text
+              style={[
+                styles.categoryName,
+                isSelected && styles.selectedText,
+              ]}
+            >
+              {category.name}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
     </ScrollView>
   );
 };
@@ -73,8 +84,7 @@ const createStyles = (colors: typeof Colors.light) =>
     selectedCategory: {
       backgroundColor: colors.primary + '20',
     },
-    emoji: {
-      fontSize: 20,
+    iconContainer: {
       marginRight: 6,
     },
     categoryName: {
@@ -89,4 +99,3 @@ const createStyles = (colors: typeof Colors.light) =>
   });
 
 export default CategoryPicker;
-

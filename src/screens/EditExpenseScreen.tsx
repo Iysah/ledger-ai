@@ -11,9 +11,11 @@ import {
   Alert,
   Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
+import { Camera, Image as ImageIcon } from 'lucide-react-native';
 import { Colors } from '../constants/colors';
 import { useExpenseStore } from '../store/expenseStore';
 import CategoryPicker from '../components/CategoryPicker';
@@ -173,8 +175,9 @@ const EditExpenseScreen: React.FC = () => {
   const styles = createStyles(colors);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={styles.chatContainer}>
+    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        <View style={styles.chatContainer}>
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Amount</Text>
           <View style={styles.amountContainer}>
@@ -252,13 +255,15 @@ const EditExpenseScreen: React.FC = () => {
                 style={styles.imageButton}
                 onPress={handlePickImage}
               >
-                <Text style={styles.imageButtonText}>📷 Gallery</Text>
+                <ImageIcon size={24} color={colors.text} style={{ marginBottom: 4 }} />
+                <Text style={styles.imageButtonText}>Gallery</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.imageButton}
                 onPress={handleTakePhoto}
               >
-                <Text style={styles.imageButtonText}>📸 Camera</Text>
+                <Camera size={24} color={colors.text} style={{ marginBottom: 4 }} />
+                <Text style={styles.imageButtonText}>Camera</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -274,7 +279,8 @@ const EditExpenseScreen: React.FC = () => {
           </Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

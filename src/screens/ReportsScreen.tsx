@@ -6,6 +6,7 @@ import {
   useColorScheme,
   ScrollView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../constants/colors';
 import { useExpenseStore } from '../store/expenseStore';
 import { formatCurrency } from '../utils/formatting';
@@ -40,8 +41,9 @@ const ReportsScreen: React.FC = () => {
   const styles = createStyles(colors);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Expense Reports</Text>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        <Text style={styles.title}>Expense Reports</Text>
 
       {/* Summary Cards */}
       <View style={styles.summaryContainer}>
@@ -83,7 +85,8 @@ const ReportsScreen: React.FC = () => {
           <Text style={styles.emptyText}>No expenses to display</Text>
         )}
       </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

@@ -3,14 +3,24 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, useColorScheme } from 'react-native';
-import { Home, Plus, BarChart3 } from 'lucide-react-native';
+import { Home, Plus, BarChart3, Settings, MessageSquare } from 'lucide-react-native';
 import { Colors } from '../constants/colors';
 
 // Screens
 import ExpenseListScreen from '../screens/ExpenseListScreen';
 import AddExpenseScreen from '../screens/AddExpenseScreen';
+import { ChatScreen } from '../screens/ChatScreen';
 import ReportsScreen from '../screens/ReportsScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 import EditExpenseScreen from '../screens/EditExpenseScreen';
+import OnboardingScreen from '../screens/OnboardingScreen';
+
+// Settings Sub-screens
+import ManageBudgetScreen from '../screens/settings/ManageBudgetScreen';
+import CategoryBudgetsScreen from '../screens/settings/CategoryBudgetsScreen';
+import PremiumScreen from '../screens/settings/PremiumScreen';
+import AboutScreen from '../screens/settings/AboutScreen';
+import { getHasSeenOnboarding } from '../utils/storage';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -25,6 +35,7 @@ const MainTabs = () => {
   return (
     <Tab.Navigator
       screenOptions={{
+        headerShown: false,
         headerStyle: {
           backgroundColor: colors.background,
         },
@@ -38,21 +49,10 @@ const MainTabs = () => {
       }}
     >
       <Tab.Screen
-        name="AddExpense"
-        component={AddExpenseScreen}
-        options={{
-          title: 'Add Expense',
-          tabBarLabel: 'Add',
-          tabBarIcon: ({ color, size }) => (
-            <Plus size={size} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
         name="Home"
         component={ExpenseListScreen}
         options={{
-          title: 'Expenses',
+          // title: 'Expenses',
           tabBarLabel: 'Home',
           tabBarIcon: ({ color, size }) => (
             <Home size={size} color={color} />
@@ -60,13 +60,46 @@ const MainTabs = () => {
         }}
       />
       <Tab.Screen
+        name="AddExpense"
+        component={AddExpenseScreen}
+        options={{
+          // title: 'Add Expense',
+          tabBarLabel: 'Add',
+          tabBarIcon: ({ color, size }) => (
+            <Plus size={size} color={color} />
+          ),
+        }}
+      />
+      
+      <Tab.Screen
+        name="Assistant"
+        component={ChatScreen}
+        options={{
+          tabBarLabel: 'AI Chat',
+          tabBarIcon: ({ color, size }) => (
+            <MessageSquare size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
         name="Reports"
         component={ReportsScreen}
         options={{
-          title: 'Reports',
+          // title: 'Reports',
           tabBarLabel: 'Reports',
           tabBarIcon: ({ color, size }) => (
             <BarChart3 size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          tabBarLabel: 'Settings',
+          tabBarIcon: ({ color, size }) => (
+            <Settings size={size} color={color} />
           ),
         }}
       />
@@ -85,6 +118,7 @@ const AppNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
+        initialRouteName={getHasSeenOnboarding() ? 'MainTabs' : 'Onboarding'}
         screenOptions={{
           headerStyle: {
             backgroundColor: colors.background,
@@ -95,6 +129,11 @@ const AppNavigator = () => {
           },
         }}
       >
+        <Stack.Screen
+          name="Onboarding"
+          component={OnboardingScreen}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="MainTabs"
           component={MainTabs}
@@ -107,6 +146,26 @@ const AppNavigator = () => {
             title: 'Edit Expense',
             presentation: 'modal',
           }}
+        />
+        <Stack.Screen
+          name="ManageBudget"
+          component={ManageBudgetScreen}
+          options={{ title: 'Manage Budget' }}
+        />
+        <Stack.Screen
+          name="CategoryBudgets"
+          component={CategoryBudgetsScreen}
+          options={{ title: 'Category Budgets' }}
+        />
+        <Stack.Screen
+          name="Premium"
+          component={PremiumScreen}
+          options={{ title: 'Premium Features' }}
+        />
+        <Stack.Screen
+          name="About"
+          component={AboutScreen}
+          options={{ title: 'About Moniqa' }}
         />
       </Stack.Navigator>
     </NavigationContainer>
