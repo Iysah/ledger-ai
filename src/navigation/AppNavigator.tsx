@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, useColorScheme } from 'react-native';
-import { Home, Plus, BarChart3, Settings, MessageSquare, ChartPie } from 'lucide-react-native';
+import { Home, Plus, BarChart3, Settings, MessageSquare, ChartPie, Sparkles } from 'lucide-react-native';
 import { Colors } from '../constants/colors';
 
 // Screens
@@ -80,7 +80,7 @@ const MainTabs = () => {
         options={{
           tabBarLabel: 'AI Chat',
           tabBarIcon: ({ color, size }) => (
-            <MessageSquare size={size} color={color} />
+            <Sparkles size={size} color={color} />
           ),
         }}
       />

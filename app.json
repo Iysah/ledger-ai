@@ -23,7 +23,10 @@
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.monitrac.app"
+      "package": "com.monitrac.app",
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/icon.png"
@@ -35,7 +38,11 @@
           "photosPermission": "The app accesses your photos to attach receipts to expenses."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "939d404d-d4d2-4b63-947b-930546a81ef6"
+      }
+    }
   }
 }
-
