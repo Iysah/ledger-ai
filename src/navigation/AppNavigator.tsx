@@ -18,6 +18,7 @@ import OnboardingScreen from '../screens/OnboardingScreen';
 // Settings Sub-screens
 import ManageBudgetScreen from '../screens/settings/ManageBudgetScreen';
 import CategoryBudgetsScreen from '../screens/settings/CategoryBudgetsScreen';
+import CategoryScreen from '../screens/settings/CategoriesScreen';
 import PremiumScreen from '../screens/settings/PremiumScreen';
 import AboutScreen from '../screens/settings/AboutScreen';
 import { getHasSeenOnboarding } from '../utils/storage';
@@ -43,6 +44,8 @@ const MainTabs = () => {
         tabBarStyle: {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
+          height: 85,
+          paddingTop: 8
         },
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textSecondary,
@@ -87,7 +90,7 @@ const MainTabs = () => {
         component={ReportsScreen}
         options={{
           // title: 'Reports',
-          tabBarLabel: 'Reports',
+          tabBarLabel: 'Insights',
           tabBarIcon: ({ color, size }) => (
             <BarChart3 size={size} color={color} />
           ),
@@ -150,7 +153,18 @@ const AppNavigator = () => {
         <Stack.Screen
           name="ManageBudget"
           component={ManageBudgetScreen}
-          options={{ title: 'Manage Budget' }}
+          options={{ 
+            title: 'Manage Budget',
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="ManageCategories"
+          component={CategoryScreen}
+          options={{ 
+            title: 'Manage Categories',
+            headerShown: false,
+          }}
         />
         <Stack.Screen
           name="CategoryBudgets"

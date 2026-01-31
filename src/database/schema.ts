@@ -15,9 +15,26 @@ export const expenses = sqliteTable('expenses', {
   embedding: text('embedding'),
 });
 
+export const budgets = sqliteTable('budgets', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  category: text('category').notNull().unique(),
+  amount: real('amount').notNull(),
+  period: text('period').notNull().default('monthly'),
+  updatedAt: text('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
 export const categories = sqliteTable('categories', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull().unique(),
   icon: text('icon').notNull(),
   color: text('color').notNull(),
+});
+
+export const messages = sqliteTable('messages', {
+  id: text('id').primaryKey(),
+  text: text('text').notNull(),
+  sender: text('sender').notNull(), // 'user' | 'ai'
+  type: text('type').notNull(), // 'text' | 'transaction' | 'error' | 'message'
+  data: text('data'), // JSON stringified
+  createdAt: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
 });

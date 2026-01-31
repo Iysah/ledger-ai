@@ -43,7 +43,7 @@ const ReportsScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Expense Reports</Text>
+        <Text style={styles.title}>Insights</Text>
 
       {/* Summary Cards */}
       <View style={styles.summaryContainer}>

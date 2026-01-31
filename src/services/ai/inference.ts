@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 // @ts-ignore
 import { useLLM, LLAMA3_2_1B_SPINQUANT } from 'react-native-executorch';
 import { vectorStore } from './vectorStore';
-import { addExpense } from '../../database/db';
+import { addExpense, getCategoryBudget, getMonthlyCategorySpend } from '../../database/db';
+import { PREDEFINED_CATEGORIES } from '../../constants/categories';
 
 export interface AIResponse {
   type: 'transaction' | 'message' | 'error';
@@ -46,7 +47,7 @@ export const useExpenseAI = () => {
             const expenseId = await addExpense({
               amount: parsedResult.amount,
               category: parsedResult.category || 'Uncategorized',
-              merchant: parsedResult.merchant || 'Unknown',
+              merchant: parsedResult.merchant || null,
               description: queryRef.current,
               date: new Date().toISOString(),
               receipt_image_uri: null,
@@ -55,7 +56,29 @@ export const useExpenseAI = () => {
             const mockEmbedding = Array(128).fill(0).map(() => Math.random());
             await vectorStore.addEmbedding(expenseId, mockEmbedding);
 
-            setResult({ type: 'transaction', data: parsedResult });
+            // Fetch budget info
+            const category = parsedResult.category || 'Uncategorized';
+            const budgetLimit = await getCategoryBudget(category);
+            let budgetInfo = null;
+            
+            if (budgetLimit !== null) {
+               const currentSpend = await getMonthlyCategorySpend(category);
+               // currentSpend includes the just added expense
+               budgetInfo = {
+                 limit: budgetLimit,
+                 remaining: budgetLimit - currentSpend,
+                 spend: currentSpend
+               };
+            }
+
+            setResult({ 
+              type: 'transaction', 
+              data: { 
+                ...parsedResult, 
+                id: expenseId,
+                budget: budgetInfo 
+              } 
+            });
           } catch (e) {
             setResult({ type: 'error', content: "Failed to save expense." });
           }
@@ -99,10 +122,14 @@ export const useExpenseAI = () => {
     queryRef.current = text;
     stateRef.current = 'extracting';
 
+    const categoriesList = PREDEFINED_CATEGORIES.map(c => c.name).join(', ');
     const prompt = `You are a financial assistant. 
       Input: "${text}"
+      Known Categories: ${categoriesList}
       Task: 
-      1. If this is a spending record, extract: {"amount": number, "currency": "USD", "category": string, "merchant": string}.
+      1. If this is a spending record, extract: {"amount": number, "currency": "USD", "category": string, "merchant": string | null}.
+         - Map the category to one of the Known Categories if possible.
+         - If merchant is not specified, set it to null.
       2. If this is a question, return: {"intent": "query"}.
       Output JSON only.`;
 
