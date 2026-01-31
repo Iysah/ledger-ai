@@ -51,11 +51,6 @@ const styles = StyleSheet.create({
   profileButton: {
     padding: 10,
     borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
   },
 });
 

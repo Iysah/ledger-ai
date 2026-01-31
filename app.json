@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Ledger AI",
-    "slug": "ledger-ai",
+    "name": "Fintrac",
+    "slug": "fintrac",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -16,14 +16,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.ledgerai.app"
+      "bundleIdentifier": "com.fintrac.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.ledgerai.app"
+      "package": "com.fintrac.app"
     },
     "web": {
       "favicon": "./assets/icon.png"

@@ -165,13 +165,13 @@ const SettingsScreen = () => {
           <SettingsItem 
             icon={Mail} 
             label="Contact Support" 
-            onPress={() => Alert.alert('Contact Support', 'support@moniqa.app')} 
+            onPress={() => Alert.alert('Contact Support', 'support@fintrac.app')} 
             colors={colors}
             styles={styles}
           />
           <SettingsItem 
             icon={Info} 
-            label="About Ledger AI" 
+            label="About Fintrac" 
             onPress={() => navigation.navigate('About')} 
             colors={colors}
             styles={styles}

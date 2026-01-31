@@ -190,7 +190,7 @@ const AppNavigator = () => {
         <Stack.Screen
           name="About"
           component={AboutScreen}
-          options={{ title: 'About Moniqa' }}
+          options={{ title: 'About Fintrac' }}
         />
       </Stack.Navigator>
     </NavigationContainer>
