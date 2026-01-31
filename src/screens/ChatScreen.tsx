@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useExpenseAI } from '../services/ai/inference';
+import { useSettingsStore } from '../store/settingsStore';
 import { Cpu, Sparkles, CheckCircle, Send } from 'lucide-react-native';
 import { Colors } from '../constants/colors';
 
@@ -16,6 +17,7 @@ interface Message {
 export const ChatScreen = () => {
   const colorScheme = useColorScheme();
   const colors = colorScheme === 'dark' ? Colors.dark : Colors.light;
+  const { currency } = useSettingsStore();
   
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -26,7 +28,7 @@ export const ChatScreen = () => {
     // Add initial greeting
     setMessages([{
       id: 'init',
-      text: "Hi! I'm your financial assistant. Tell me what you spent (e.g., 'Spent $15 on lunch') or ask about your expenses.",
+      text: `Hi! I'm your financial assistant. Tell me what you spent (e.g., 'Spent ${currency.symbol}15 on lunch') or ask about your expenses.`,
       sender: 'ai',
       type: 'text'
     }]);
@@ -38,7 +40,7 @@ export const ChatScreen = () => {
 
     let aiText = result.content;
     if (result.type === 'transaction' && result.data) {
-      aiText = `Saved: ${result.data.merchant || 'Expense'} - $${result.data.amount} (${result.data.category})`;
+      aiText = `Saved: ${result.data.merchant || 'Expense'} - ${currency.symbol}${result.data.amount} (${result.data.category})`;
     } else if (!aiText && result.type !== 'error') {
       aiText = "I processed that but have nothing to say.";
     }
@@ -114,7 +116,7 @@ export const ChatScreen = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top', 'left', 'right']}>
       <FlatList
         ref={flatListRef}
         data={messages}
@@ -137,7 +139,7 @@ export const ChatScreen = () => {
                 {isProcessing ? (
                     <ActivityIndicator color="white" size="small" />
                 ) : (
-                    <Send size={20} color="white" />
+                    <Send size={22} color="white" />
                 )}
             </TouchableOpacity>
         </View>
@@ -159,10 +161,10 @@ const styles = StyleSheet.create({
   bubble: { padding: 12, borderRadius: 20, maxWidth: '80%' },
   messageText: { fontSize: 16 },
   inputContainer: { 
-    flexDirection: 'row', padding: 10, borderTopWidth: 1, alignItems: 'center' 
+    flexDirection: 'row', padding: 12, borderTopWidth: 1, alignItems: 'center' 
   },
-  input: { flex: 1, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 8, fontSize: 16, maxHeight: 100 },
-  sendButton: { width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginLeft: 8 },
+  input: { flex: 1, borderRadius: 24, paddingHorizontal: 20, paddingVertical: 12, fontSize: 17, maxHeight: 120 },
+  sendButton: { width: 48, height: 48, borderRadius: 24, justifyContent: 'center', alignItems: 'center', marginLeft: 12 },
   title: { fontSize: 20, fontWeight: 'bold', marginTop: 16, marginBottom: 8 },
   subtitle: { fontSize: 14, textAlign: 'center', marginBottom: 24 },
   button: { paddingHorizontal: 24, paddingVertical: 12, borderRadius: 8 },

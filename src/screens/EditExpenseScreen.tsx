@@ -18,6 +18,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Camera, Image as ImageIcon } from 'lucide-react-native';
 import { Colors } from '../constants/colors';
 import { useExpenseStore } from '../store/expenseStore';
+import { useSettingsStore } from '../store/settingsStore';
 import CategoryPicker from '../components/CategoryPicker';
 import { Expense } from '../types';
 import { formatDateISO } from '../utils/formatting';
@@ -37,6 +38,7 @@ const EditExpenseScreen: React.FC = () => {
   const route = useRoute<EditExpenseRouteProp>();
   const navigation = useNavigation();
   const { updateExpense, loadCategories, categories } = useExpenseStore();
+  const { currency } = useSettingsStore();
 
   const expense = route.params.expense;
 
@@ -181,7 +183,7 @@ const EditExpenseScreen: React.FC = () => {
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Amount</Text>
           <View style={styles.amountContainer}>
-            <Text style={styles.currencySymbol}>$</Text>
+            <Text style={styles.currencySymbol}>{currency.symbol}</Text>
             <TextInput
               style={styles.amountInput}
               value={formData.amount}

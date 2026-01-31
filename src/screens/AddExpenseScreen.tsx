@@ -16,6 +16,7 @@ import { toast } from 'sonner-native';
 import { Camera, Image as ImageIcon } from 'lucide-react-native';
 import { Colors } from '../constants/colors';
 import { useExpenseStore } from '../store/expenseStore';
+import { useSettingsStore } from '../store/settingsStore';
 import CategoryPicker from '../components/CategoryPicker';
 import { ExpenseFormData } from '../types';
 import { formatDateISO } from '../utils/formatting';
@@ -28,6 +29,7 @@ const AddExpenseScreen: React.FC = () => {
   const colorScheme = useColorScheme();
   const colors = colorScheme === 'dark' ? Colors.dark : Colors.light;
   const { addExpense, loadCategories, categories } = useExpenseStore();
+  const { currency } = useSettingsStore();
 
   const [formData, setFormData] = useState<ExpenseFormData>({
     amount: '',
@@ -196,7 +198,7 @@ const AddExpenseScreen: React.FC = () => {
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Amount</Text>
           <View style={styles.amountContainer}>
-            <Text style={styles.currencySymbol}>$</Text>
+            <Text style={styles.currencySymbol}>{currency.symbol}</Text>
             <TextInput
               style={styles.amountInput}
               value={formData.amount}
