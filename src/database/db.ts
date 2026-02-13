@@ -1,8 +1,8 @@
-import { db } from './drizzle';
-import { expenses, categories, messages, budgets } from './schema';
+import { db, client } from './drizzle';
+import { expenses, categories, messages, budgets, incomes } from './schema';
 import { eq, desc, and, gte, lte, sql } from 'drizzle-orm';
 import { PREDEFINED_CATEGORIES } from '../constants/categories';
-import { Category, Expense, Budget } from '../types';
+import { Category, Expense, Budget, Income } from '../types';
 
 /**
  * Initialize the SQLite database and create tables
@@ -11,7 +11,7 @@ export const initDatabase = async () => {
   try {
     // Ensure tables exist using raw SQL for simplicity in this migration phase
     // In a full Drizzle setup, we'd use migrations
-    await db.run(sql`
+    await client.execAsync(`
       CREATE TABLE IF NOT EXISTS categories (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL UNIQUE,
@@ -20,7 +20,7 @@ export const initDatabase = async () => {
       );
     `);
     
-    await db.run(sql`
+    await client.execAsync(`
       CREATE TABLE IF NOT EXISTS expenses (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         amount REAL NOT NULL,
@@ -35,7 +35,18 @@ export const initDatabase = async () => {
       );
     `);
 
-    await db.run(sql`
+    await client.execAsync(`
+      CREATE TABLE IF NOT EXISTS incomes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        amount REAL NOT NULL,
+        description TEXT NOT NULL,
+        type TEXT NOT NULL,
+        date TEXT NOT NULL,
+        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    await client.execAsync(`
        CREATE TABLE IF NOT EXISTS messages (
          id TEXT PRIMARY KEY,
          text TEXT NOT NULL,
@@ -49,19 +60,19 @@ export const initDatabase = async () => {
     // Check if we need to migrate existing tables (e.g. add columns)
     // This is a simplified migration check
     try {
-      await db.run(sql`ALTER TABLE categories ADD COLUMN icon TEXT NOT NULL DEFAULT 'other'`);
+      await client.execAsync(`ALTER TABLE categories ADD COLUMN icon TEXT NOT NULL DEFAULT 'other'`);
     } catch (e) { /* ignore if exists */ }
 
     try {
-      await db.run(sql`ALTER TABLE categories ADD COLUMN color TEXT NOT NULL DEFAULT '#cccccc'`);
+      await client.execAsync(`ALTER TABLE categories ADD COLUMN color TEXT NOT NULL DEFAULT '#cccccc'`);
     } catch (e) { /* ignore if exists */ }
 
     try {
-      await db.run(sql`ALTER TABLE expenses ADD COLUMN merchant TEXT`);
+      await client.execAsync(`ALTER TABLE expenses ADD COLUMN merchant TEXT`);
     } catch (e) { /* ignore if exists */ }
     
     try {
-      await db.run(sql`ALTER TABLE expenses ADD COLUMN embedding TEXT`);
+      await client.execAsync(`ALTER TABLE expenses ADD COLUMN embedding TEXT`);
     } catch (e) { /* ignore if exists */ }
 
     await seedCategories();
@@ -160,7 +171,12 @@ export const deleteCategory = async (id: number): Promise<void> => {
 export const getExpenses = async (): Promise<Expense[]> => {
   try {
     const result = await db.select().from(expenses).orderBy(desc(expenses.date), desc(expenses.createdAt));
-    return result as Expense[];
+    return result.map(e => ({
+      ...e,
+      receipt_image_uri: e.receiptImageUri,
+      created_at: e.createdAt,
+      updated_at: e.updatedAt,
+    })) as Expense[];
   } catch (error) {
     console.error('Error fetching expenses:', error);
     throw error;
@@ -241,7 +257,12 @@ export const getFilteredExpenses = async (
       .where(and(...conditions))
       .orderBy(desc(expenses.date), desc(expenses.createdAt));
       
-    return result as Expense[];
+    return result.map(e => ({
+      ...e,
+      receipt_image_uri: e.receiptImageUri,
+      created_at: e.createdAt,
+      updated_at: e.updatedAt,
+    })) as Expense[];
   } catch (error) {
     console.error('Error fetching filtered expenses:', error);
     throw error;
@@ -390,5 +411,51 @@ export const getAllCategorySpends = async (): Promise<Record<string, number>> =>
   } catch (error) {
     console.error('Error calculating all monthly spends:', error);
     return {};
+  }
+};
+
+/**
+ * Get all incomes
+ */
+export const getIncomes = async (): Promise<Income[]> => {
+  try {
+    const result = await db.select().from(incomes).orderBy(desc(incomes.date), desc(incomes.createdAt));
+    return result.map(i => ({
+      ...i,
+      created_at: i.createdAt,
+    })) as Income[];
+  } catch (error) {
+    console.error('Error fetching incomes:', error);
+    throw error;
+  }
+};
+
+/**
+ * Add a new income
+ */
+export const addIncome = async (income: Omit<Income, 'id' | 'created_at'>): Promise<number> => {
+  try {
+    const result = await db.insert(incomes).values({
+      amount: income.amount,
+      description: income.description,
+      type: income.type,
+      date: income.date,
+    }).returning({ insertedId: incomes.id });
+    return result[0].insertedId;
+  } catch (error) {
+    console.error('Error adding income:', error);
+    throw error;
+  }
+};
+
+/**
+ * Delete an income
+ */
+export const deleteIncome = async (id: number): Promise<void> => {
+  try {
+    await db.delete(incomes).where(eq(incomes.id, id));
+  } catch (error) {
+    console.error('Error deleting income:', error);
+    throw error;
   }
 };

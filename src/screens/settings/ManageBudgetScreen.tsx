@@ -10,12 +10,14 @@ import {
   TouchableOpacity,
   useColorScheme
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useExpenseStore } from '../../store/expenseStore';
 import { useSettingsStore } from '../../store/settingsStore';
 import { Colors } from '../../constants/colors';
 import { GLOBAL_BUDGET_CATEGORY_NAME } from '../../utils/budget';
 import { formatCurrency } from '../../utils/formatting';
 import { getIcon } from '../../utils/icons';
+import BackButton from '../../components/BackButton';
 
 const ManageBudgetScreen = () => {
   const colorScheme = useColorScheme();
@@ -71,18 +73,22 @@ const ManageBudgetScreen = () => {
   };
 
   return (
-    <KeyboardAvoidingView 
-      style={{ flex: 1 }} 
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={100}
-    >
-      <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
-        <View style={styles.header}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Manage Budget</Text>
-          <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
-            Set your monthly spending limits
-          </Text>
-        </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
+      <View style={styles.navHeader}>
+        <BackButton />
+        <Text style={[styles.navHeaderTitle, { color: colors.text }]}>Manage Budget</Text>
+      </View>
+      <KeyboardAvoidingView 
+        style={{ flex: 1 }} 
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={10}
+      >
+        <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
+          <View style={styles.header}>
+            <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
+              Set your monthly spending limits
+            </Text>
+          </View>
 
         {/* Global Budget Section */}
         <View style={[styles.section, { backgroundColor: colors.surface }]}>
@@ -145,6 +151,7 @@ const ManageBudgetScreen = () => {
         <View style={{ height: 40 }} />
       </ScrollView>
     </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
@@ -153,14 +160,20 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
+  navHeader: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  navHeaderTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
   header: {
     marginBottom: 24,
     marginTop: 8,
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    marginBottom: 4,
   },
   headerSubtitle: {
     fontSize: 16,

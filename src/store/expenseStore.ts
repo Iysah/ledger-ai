@@ -1,9 +1,10 @@
 import { create } from 'zustand';
-import { Expense, Category, FilterOptions, Budget } from '../types';
+import { Expense, Category, FilterOptions, Budget, Income } from '../types';
 import * as db from '../database/db';
 
 interface ExpenseStore {
   expenses: Expense[];
+  incomes: Income[];
   categories: Category[];
   budgets: Budget[];
   categorySpends: Record<string, number>;
@@ -14,14 +15,16 @@ interface ExpenseStore {
 
   // Actions
   loadExpenses: () => Promise<void>;
+  loadIncomes: () => Promise<void>;
   loadCategories: () => Promise<void>;
   loadBudgets: () => Promise<void>;
   addCategory: (category: Omit<Category, 'id'>) => Promise<void>;
   deleteCategory: (id: number) => Promise<void>;
-  setBudget: (category: string, amount: number) => Promise<void>;
   addExpense: (expense: Omit<Expense, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
   updateExpense: (id: number, expense: Partial<Expense>) => Promise<void>;
   deleteExpense: (id: number) => Promise<void>;
+  addIncome: (income: Omit<Income, 'id' | 'created_at'>) => Promise<void>;
+  deleteIncome: (id: number) => Promise<void>;
   filterExpenses: (options: FilterOptions) => Promise<void>;
   clearFilters: () => void;
   setError: (error: string | null) => void;
@@ -29,6 +32,7 @@ interface ExpenseStore {
 
 export const useExpenseStore = create<ExpenseStore>((set, get) => ({
   expenses: [],
+  incomes: [],
   categories: [],
   budgets: [],
   categorySpends: {},
@@ -49,6 +53,16 @@ export const useExpenseStore = create<ExpenseStore>((set, get) => ({
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to load expenses';
       set({ error: errorMessage, isLoading: false });
+    }
+  },
+
+  loadIncomes: async () => {
+    try {
+      const incomes = await db.getIncomes();
+      set({ incomes });
+    } catch (error) {
+      console.error('Failed to load incomes', error);
+      // Fail silently as it's secondary data or handle error
     }
   },
 
@@ -100,17 +114,6 @@ export const useExpenseStore = create<ExpenseStore>((set, get) => ({
     }
   },
 
-  setBudget: async (category, amount) => {
-    // We don't set global loading here to keep UI responsive
-    try {
-      await db.setCategoryBudget(category, amount);
-      await get().loadBudgets();
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to set budget';
-      set({ error: errorMessage });
-    }
-  },
-
   addExpense: async (expense) => {
     set({ isLoading: true, error: null });
     try {
@@ -143,6 +146,30 @@ export const useExpenseStore = create<ExpenseStore>((set, get) => ({
       await get().loadExpenses();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to delete expense';
+      set({ error: errorMessage, isLoading: false });
+    }
+  },
+
+  addIncome: async (income) => {
+    set({ isLoading: true, error: null });
+    try {
+      await db.addIncome(income);
+      await get().loadIncomes();
+      set({ isLoading: false });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to add income';
+      set({ error: errorMessage, isLoading: false });
+    }
+  },
+
+  deleteIncome: async (id) => {
+    set({ isLoading: true, error: null });
+    try {
+      await db.deleteIncome(id);
+      await get().loadIncomes();
+      set({ isLoading: false });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete income';
       set({ error: errorMessage, isLoading: false });
     }
   },

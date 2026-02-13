@@ -13,6 +13,15 @@ export interface Budget {
   updatedAt?: string;
 }
 
+export interface Income {
+  id: number;
+  amount: number;
+  description: string;
+  type: string; // Salary, Freelance, Gifts, Dividends, etc.
+  date: string; // ISO date string
+  created_at: string;
+}
+
 export interface Expense {
   id: number;
   amount: number;

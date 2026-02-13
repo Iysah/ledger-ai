@@ -8,10 +8,9 @@ import {
   useColorScheme,
   ScrollView,
   Image,
-  Platform,
   Alert,
+  Platform,
 } from 'react-native';
-import { toast } from 'sonner-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -19,7 +18,6 @@ import * as ImagePicker from 'expo-image-picker';
 import { Camera, Image as ImageIcon } from 'lucide-react-native';
 import { Colors } from '../constants/colors';
 import { useExpenseStore } from '../store/expenseStore';
-import { useSettingsStore } from '../store/settingsStore';
 import CategoryPicker from '../components/CategoryPicker';
 import { Expense } from '../types';
 import { formatDateISO } from '../utils/formatting';
@@ -39,7 +37,6 @@ const EditExpenseScreen: React.FC = () => {
   const route = useRoute<EditExpenseRouteProp>();
   const navigation = useNavigation();
   const { updateExpense, loadCategories, categories } = useExpenseStore();
-  const { currency } = useSettingsStore();
 
   const expense = route.params.expense;
 
@@ -104,9 +101,7 @@ const EditExpenseScreen: React.FC = () => {
         }));
       }
     } catch (error) {
-      toast.error('Error', {
-        description: 'Failed to pick image',
-      });
+      Alert.alert('Error', 'Failed to pick image');
     }
   };
 
@@ -115,9 +110,7 @@ const EditExpenseScreen: React.FC = () => {
       const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
       
       if (permissionResult.granted === false) {
-        toast.error('Permission Required', {
-          description: 'Please grant camera permissions to take photos.',
-        });
+        Alert.alert('Permission Required', 'Please grant camera permissions to take photos.');
         return;
       }
 
@@ -134,9 +127,7 @@ const EditExpenseScreen: React.FC = () => {
         }));
       }
     } catch (error) {
-      toast.error('Error', {
-        description: 'Failed to take photo',
-      });
+      Alert.alert('Error', 'Failed to take photo');
     }
   };
 
@@ -146,23 +137,17 @@ const EditExpenseScreen: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!formData.amount || parseFloat(formData.amount) <= 0) {
-      toast.error('Invalid Amount', {
-        description: 'Please enter a valid amount',
-      });
+      Alert.alert('Invalid Amount', 'Please enter a valid amount');
       return;
     }
 
     if (!formData.description.trim()) {
-      toast.error('Missing Description', {
-        description: 'Please enter a description',
-      });
+      Alert.alert('Missing Description', 'Please enter a description');
       return;
     }
 
     if (!formData.category) {
-      toast.error('Missing Category', {
-        description: 'Please select a category',
-      });
+      Alert.alert('Missing Category', 'Please select a category');
       return;
     }
 
@@ -177,14 +162,11 @@ const EditExpenseScreen: React.FC = () => {
         receipt_image_uri: formData.receipt_image_uri,
       });
 
-      toast.success('Success', {
-        description: 'Expense updated successfully',
-      });
-      navigation.goBack();
+      Alert.alert('Success', 'Expense updated successfully', [
+        { text: 'OK', onPress: () => navigation.goBack() },
+      ]);
     } catch (error) {
-      toast.error('Error', {
-        description: 'Failed to update expense. Please try again.',
-      });
+      Alert.alert('Error', 'Failed to update expense. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -199,7 +181,7 @@ const EditExpenseScreen: React.FC = () => {
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Amount</Text>
           <View style={styles.amountContainer}>
-            <Text style={styles.currencySymbol}>{currency.symbol}</Text>
+            <Text style={styles.currencySymbol}>$</Text>
             <TextInput
               style={styles.amountInput}
               value={formData.amount}

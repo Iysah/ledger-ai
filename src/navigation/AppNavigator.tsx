@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, useColorScheme } from 'react-native';
-import { Home, Plus, BarChart3, Settings, MessageSquare, ChartPie, Sparkles } from 'lucide-react-native';
+import { Home, Plus, BarChart3, Settings, MessageSquare, ChartPie, Sparkles, NotebookPen } from 'lucide-react-native';
 import { Colors } from '../constants/colors';
 
 // Screens
@@ -69,7 +69,7 @@ const MainTabs = () => {
         options={{
           tabBarLabel: 'Budget',
           tabBarIcon: ({ color, size }) => (
-            <BarChart3 size={size} color={color} />
+            <NotebookPen size={size} color={color} />
           ),
         }}
       />
@@ -185,12 +185,18 @@ const AppNavigator = () => {
         <Stack.Screen
           name="Premium"
           component={PremiumScreen}
-          options={{ title: 'Premium Features' }}
+          options={{ 
+            title: 'Premium Features',
+            headerShown: false,
+          }}
         />
         <Stack.Screen
           name="About"
           component={AboutScreen}
-          options={{ title: 'About Monitrac' }}
+          options={{ 
+            title: 'About Monitrac',
+            headerShown: false,
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>

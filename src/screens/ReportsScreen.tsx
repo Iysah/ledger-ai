@@ -23,23 +23,13 @@ const ReportsScreen: React.FC = () => {
     loadExpenses();
   }, []);
 
-  // Filter expenses for current month
-  const currentMonthExpenses = expenses.filter(expense => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const currentMonthPrefix = `${year}-${month}`;
-    
-    return expense.date.startsWith(currentMonthPrefix);
-  });
-
   // Calculate statistics
-  const totalExpenses = currentMonthExpenses.reduce((sum, expense) => sum + expense.amount, 0);
-  const expenseCount = currentMonthExpenses.length;
+  const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+  const expenseCount = expenses.length;
   const averageExpense = expenseCount > 0 ? totalExpenses / expenseCount : 0;
 
   // Group by category
-  const categoryTotals = currentMonthExpenses.reduce((acc, expense) => {
+  const categoryTotals = expenses.reduce((acc, expense) => {
     acc[expense.category] = (acc[expense.category] || 0) + expense.amount;
     return acc;
   }, {} as Record<string, number>);
@@ -53,7 +43,7 @@ const ReportsScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Monthly Insights</Text>
+        <Text style={styles.title}>Expense Reports</Text>
 
       {/* Summary Cards */}
       <View style={styles.summaryContainer}>

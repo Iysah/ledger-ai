@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, useColorScheme } from 'react-native';
 import { Colors } from '../constants/colors';
 import { useExpenseStore } from '../store/expenseStore';
@@ -9,15 +9,27 @@ import { calculateBudgetOverview, getBudgetStatusColor } from '../utils/budget';
 const BudgetOverview = () => {
   const colorScheme = useColorScheme();
   const colors = colorScheme === 'dark' ? Colors.dark : Colors.light;
-  const { budgets, categorySpends } = useExpenseStore();
+  const { budgets, categorySpends, incomes, loadIncomes } = useExpenseStore();
   // Subscribe to currency changes to trigger re-render
   useSettingsStore(state => state.currency);
 
+  useEffect(() => {
+    loadIncomes();
+  }, []);
+
+  const totalIncome = incomes.reduce((sum, item) => sum + item.amount, 0);
   const { totalBudget, totalSpent, remaining, percentage } = calculateBudgetOverview(budgets, categorySpends);
   const statusColor = getBudgetStatusColor(percentage);
 
   return (
     <View style={[styles.card, { backgroundColor: colors.surface }]}>
+      <View style={styles.incomeContainer}>
+        <Text style={[styles.label, { color: colors.textSecondary }]}>Monthly Income</Text>
+        <Text style={[styles.incomeAmount, { color: colors.primary }]}>{formatCurrency(totalIncome)}</Text>
+      </View>
+      
+      <View style={[styles.divider, { backgroundColor: colors.border }]} />
+
       <Text style={[styles.title, { color: colors.textSecondary }]}>Total Budget</Text>
       <View style={styles.row}>
         <Text style={[styles.amount, { color: colors.text }]}>
@@ -55,6 +67,27 @@ const styles = StyleSheet.create({
     margin: 20,
     padding: 20,
     borderRadius: 20,
+  },
+  incomeContainer: {
+    marginBottom: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  incomeAmount: {
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  divider: {
+    height: 1,
+    width: '100%',
+    marginBottom: 16,
   },
   title: {
     fontSize: 14,

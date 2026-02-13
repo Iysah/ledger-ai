@@ -30,6 +30,15 @@ export const categories = sqliteTable('categories', {
   color: text('color').notNull(),
 });
 
+export const incomes = sqliteTable('incomes', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  amount: real('amount').notNull(),
+  description: text('description').notNull(),
+  type: text('type').notNull(),
+  date: text('date').notNull(),
+  createdAt: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
 export const messages = sqliteTable('messages', {
   id: text('id').primaryKey(),
   text: text('text').notNull(),

@@ -8,7 +8,7 @@ const AboutScreen = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Text style={[styles.text, { color: colors.text }]}>About Monitrac</Text>
+      <Text style={[styles.text, { color: colors.text }]}>About Moniqa</Text>
       <Text style={[styles.subText, { color: colors.textSecondary }]}>Version 1.0.0</Text>
     </View>
   );

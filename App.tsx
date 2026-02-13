@@ -14,7 +14,7 @@ import { useExpenseStore } from './src/store/expenseStore';
  */
 export default function App() {
   const colorScheme = useColorScheme();
-  const { loadCategories, loadExpenses } = useExpenseStore();
+  const { loadCategories, loadExpenses, loadIncomes } = useExpenseStore();
 
   useEffect(() => {
     // Initialize database on app start
@@ -24,6 +24,7 @@ export default function App() {
         // Load initial data
         await loadCategories();
         await loadExpenses();
+        await loadIncomes();
       } catch (error) {
         console.error('Failed to initialize app:', error);
       }
