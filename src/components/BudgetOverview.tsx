@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   spentText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '500',
   },
   progressBarBg: {
@@ -126,11 +126,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   remainingText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '500',
   },
   remainingAmount: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: '700',
   },
 });

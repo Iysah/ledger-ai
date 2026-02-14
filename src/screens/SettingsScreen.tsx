@@ -10,6 +10,7 @@ import {
   Alert,
   useColorScheme,
 } from 'react-native';
+import { toast } from 'sonner-native';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { 
@@ -249,7 +250,7 @@ const SettingsScreen = () => {
           />
           <SettingsItem 
             icon={Info} 
-            label="About Ledger AI" 
+            label="About Monitrac" 
             onPress={() => navigation.navigate('About')} 
             colors={colors}
             styles={styles}

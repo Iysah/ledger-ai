@@ -135,17 +135,33 @@ export const useExpenseAI = () => {
     stateRef.current = 'extracting';
 
     const categoriesList = PREDEFINED_CATEGORIES.map(c => c.name).join(', ');
-    const prompt = `You are a financial assistant. 
-      Input: "${text}"
-      Known Categories: ${categoriesList}
-      Task: 
-      1. If this is a spending record, extract: {"amount": number, "currency": "USD", "category": string, "merchant": string | null}.
-         - Map the category to one of the Known Categories if possible.
-         - If merchant is not specified, set it to null.
-      2. If this is a question, return: {"intent": "query"}.
-      Output JSON only.`;
+    const currentDate = new Date().toISOString().split('T')[0];
 
-    await llm.generate([{ role: 'user', content: prompt }]);
+    const systemPrompt = `
+    You are a specialized Financial Data Extraction engine for a private ledger.
+    Your ONLY goal is to parse user text into a structured JSON schema.
+
+    CONTEXT:
+    - Today's Date: ${currentDate}
+    - Valid Categories: [${categoriesList}]
+
+    RULES:
+    1. Classification: Determine if the input is an 'entry' (logging an expense) or a 'query' (asking for information).
+    2. Normalization:
+       - Always convert relative dates (e.g., "yesterday", "last Friday") to YYYY-MM-DD based on Today's Date.
+       - If a category doesn't perfectly match, map it to the closest 'Valid Category'. If no match is even remote, use 'Uncategorized'.
+    3. Data Integrity:
+       - Amounts must be pure numbers.
+       - If the user mentions a merchant like "Starbucks", extract it. If not, set to null.
+    4. Response Format: Return ONLY valid JSON. No conversational text, no markdown blocks.
+    `;
+
+    const userPrompt = `Input: "${text}"`;
+
+    await llm.generate([
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt }
+    ]);
   };
 
   return {
