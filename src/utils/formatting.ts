@@ -1,5 +1,6 @@
 import { useSettingsStore } from '../store/settingsStore';
 
+
 /**
  * Format currency amount
  * Uses manual formatting to ensure the symbol is always used instead of the ISO code

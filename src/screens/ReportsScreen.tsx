@@ -10,6 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../constants/colors';
 import { useExpenseStore } from '../store/expenseStore';
 import { formatCurrency } from '../utils/formatting';
+import { useSettingsStore } from '@/store/settingsStore';
 
 /**
  * Basic Reports Screen showing expense statistics
@@ -18,6 +19,7 @@ const ReportsScreen: React.FC = () => {
   const colorScheme = useColorScheme();
   const colors = colorScheme === 'dark' ? Colors.dark : Colors.light;
   const { expenses, loadExpenses } = useExpenseStore();
+  const { currency } = useSettingsStore();
 
   useEffect(() => {
     loadExpenses();
