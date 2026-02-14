@@ -29,31 +29,59 @@ This document outlines the planned features and suggestions for the Monitrac app
 
 ---
 
-## 💡 Recommended Suggestions
+## 💎 Pro Plan & Monetization (Premium)
 
-### Data Security & Synchronization
-**3. Cloud Sync & Backup**
-- **Why**: Currently, all data is stored locally (SQLite/MMKV). If a user loses their device, they lose their financial data.
-- **Plan**: Sync local SQLite data with a cloud database (e.g., Firestore or a PostgreSQL instance) after authentication.
+This section outlines the strategy for the "Monitrac Pro" subscription. The goal is to offer core value for free while gating advanced automation, insights, and convenience behind a paywall.
 
-**4. Biometric Security (App Lock)**
+### Paywall Implementation
+- **Technology**: `RevenueCat` (Recommended for ease of use) or `expo-in-app-purchases`.
+- **Strategy**:
+  - **Freemium Model**: Basic manual entry and simple local storage are free.
+  - **Hard Gate**: Features below trigger the `PremiumScreen` paywall when accessed.
+  - **Soft Gate**: "You've reached your limit of 5 free AI scans this month."
+
+### Proposed Premium Features
+
+#### 1. AI Financial Assistant (Existing & Enhanced)
+- **Current State**: `useExpenseAI` uses local LLAMA for basic extraction.
+- **Premium Value**: 
+  - **Unlimited AI Interactions**: Free users get 5 queries/day; Pro users get unlimited.
+  - **Smart Financial Advice**: "How can I save more on groceries?" (Requires RAG on full history).
+  - **Voice-to-Text Entry**: The new feature requested above should be a Pro feature due to its convenience.
+
+#### 2. Cloud Sync & Multi-Device Support
+- **Why**: The #1 reason users pay is data safety and accessibility across devices.
+- **Feature**: Real-time sync between iPhone, iPad, and Android.
+- **Tech**: Firestore/PostgreSQL backend (requires the Google Sign-In feature).
+
+#### 3. Advanced Analytics & Charts
+- **Current State**: `ReportsScreen` shows basic text summaries.
+- **Premium Value**:
+  - Interactive Pie/Bar Charts (using `react-native-gifted-charts`).
+  - Month-over-Month comparison.
+  - Forecasting: "At this rate, you will overspend by $200."
+
+#### 4. Receipt Scanning (OCR)
+- **Feature**: Snap a photo of a receipt to auto-fill the expense form.
+- **Why**: High utility, saves time.
+
+#### 5. Data Export
+- **Feature**: Export data to CSV/Excel/PDF for tax purposes or personal archiving.
+
+---
+
+## 💡 Recommended Suggestions (General)
+
+### Data Security
+**6. Biometric Security (App Lock)**
 - **Why**: Financial data is sensitive.
 - **Plan**: Use `expo-local-authentication` to require FaceID/TouchID when opening the app.
 
 ### Enhanced Financial Features
-**5. Recurring Transactions**
+**7. Recurring Transactions**
 - **Why**: Many expenses (Rent, Subscriptions) and incomes (Salary) are repetitive.
 - **Plan**: Add a "Recurring" flag to the transaction model to automatically generate entries for future dates.
 
-**6. Multi-Currency Support**
+**8. Multi-Currency Support**
 - **Why**: Essential for users who travel or hold assets in different currencies.
 - **Plan**: Store a base currency and exchange rates, allowing transactions to be entered in any currency but visualized in the base currency.
-
-**7. Receipt Scanning (OCR)**
-- **Why**: Reduces friction in adding expenses.
-- **Plan**: Use on-device AI (Executorch) or a cloud API to analyze images attached to expenses and auto-fill the form.
-
-### Data Portability
-**8. CSV/JSON Export & Import**
-- **Why**: Users often want to perform their own analysis in Excel or migrate data.
-- **Plan**: Implement file system sharing to export the database tables as CSV files.

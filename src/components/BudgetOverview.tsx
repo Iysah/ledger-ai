@@ -75,8 +75,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   label: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600',
+    fontFamily: 'Lato-Regular',
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
@@ -92,6 +93,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '600',
+    fontFamily: 'Lato-Regular',
     marginBottom: 8,
     textTransform: 'uppercase',
     letterSpacing: 1,
@@ -105,10 +107,12 @@ const styles = StyleSheet.create({
   amount: {
     fontSize: 32,
     fontWeight: '700',
+
   },
   spentText: {
     fontSize: 12,
     fontWeight: '500',
+    fontFamily: 'Lato-Regular',
   },
   progressBarBg: {
     height: 12,
@@ -128,10 +132,12 @@ const styles = StyleSheet.create({
   remainingText: {
     fontSize: 12,
     fontWeight: '500',
+    fontFamily: 'Lato-Regular',
   },
   remainingAmount: {
     fontSize: 14,
     fontWeight: '700',
+    fontFamily: 'Lato-Regular',
   },
 });
 
