@@ -1,7 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet, useColorScheme } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { ChevronLeft } from 'lucide-react-native';
+import { ArrowLeft} from 'lucide-react-native';
 import { Colors } from '../constants/colors';
 
 const BackButton = () => {
@@ -15,7 +15,7 @@ const BackButton = () => {
       style={styles.button}
       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
     >
-      <ChevronLeft size={28} color={colors.text} />
+      <ArrowLeft size={24} color={colors.text} />
     </TouchableOpacity>
   );
 };
@@ -23,8 +23,6 @@ const BackButton = () => {
 const styles = StyleSheet.create({
   button: {
     padding: 8,
-    marginLeft: -8,
-    alignSelf: 'flex-start',
   },
 });
 

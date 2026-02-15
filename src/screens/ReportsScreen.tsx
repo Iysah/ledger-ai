@@ -45,7 +45,7 @@ const ReportsScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Expense Reports</Text>
+        <Text style={styles.title}>Insights</Text>
 
       {/* Summary Cards */}
       <View style={styles.summaryContainer}>
@@ -104,6 +104,7 @@ const createStyles = (colors: typeof Colors.light) =>
     title: {
       fontSize: 28,
       fontWeight: '700',
+      fontFamily: 'Lato-Bold',
       color: colors.text,
       marginBottom: 24,
     },
@@ -124,12 +125,14 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     summaryLabel: {
       fontSize: 14,
+      fontFamily: 'Lato-Regular',
       color: colors.textSecondary,
       marginBottom: 8,
     },
     summaryValue: {
       fontSize: 24,
       fontWeight: '700',
+      fontFamily: 'Lato-Bold',
       color: colors.text,
     },
     section: {
@@ -138,6 +141,7 @@ const createStyles = (colors: typeof Colors.light) =>
     sectionTitle: {
       fontSize: 20,
       fontWeight: '600',
+      fontFamily: 'Lato-Bold',
       color: colors.text,
       marginBottom: 16,
     },

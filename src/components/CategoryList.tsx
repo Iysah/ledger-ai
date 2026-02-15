@@ -33,7 +33,7 @@ const CategoryList: React.FC<CategoryListProps> = ({ limit, onSeeAll }) => {
     return (
       <TouchableOpacity style={[styles.itemContainer, { backgroundColor: colors.surface }]}>
         <View style={[styles.iconContainer, { backgroundColor: item.color + '20' }]}>
-          <Icon size={24} color={item.color} />
+          <Icon size={22} color={item.color} />
         </View>
         
         <View style={styles.contentContainer}>
@@ -103,6 +103,7 @@ const styles = StyleSheet.create({
   seeAll: {
     fontSize: 14,
     fontWeight: '600',
+    fontFamily: 'Lato-Bold',
   },
   itemContainer: {
     flexDirection: 'row',
@@ -112,9 +113,9 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   iconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
@@ -131,6 +132,7 @@ const styles = StyleSheet.create({
   categoryName: {
     fontSize: 16,
     fontWeight: '600',
+    fontFamily: 'Lato-Bold',
   },
   amountRow: {
     flexDirection: 'row',
@@ -138,11 +140,13 @@ const styles = StyleSheet.create({
   },
   spentAmount: {
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '700',  
+    fontFamily: 'Lato-Bold',
   },
   budgetAmount: {
     fontSize: 12,
     fontWeight: '500',
+    fontFamily: 'Lato-Regular',
   },
   progressBg: {
     height: 6,

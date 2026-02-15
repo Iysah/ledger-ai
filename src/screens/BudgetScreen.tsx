@@ -156,8 +156,11 @@ const BudgetScreen = () => {
           <View style={[styles.modalContent, { backgroundColor: colors.background }]}>
             <View style={styles.modalHeader}>
               <Text style={[styles.modalTitle, { color: colors.text }]}>Add Income</Text>
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <X size={24} color={colors.text} />
+              <TouchableOpacity 
+                onPress={() => setModalVisible(false)}
+                style={[styles.closeButton, { borderColor: colors.border }]}
+              >
+                <X size={20} color={colors.text} />
               </TouchableOpacity>
             </View>
             
@@ -241,6 +244,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 32,
     fontWeight: '700',
+    fontFamily: 'Lato-Bold',
   },
   content: {
     flex: 1,
@@ -253,22 +257,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 5,
   },
   summaryLabel: {
     color: 'rgba(255,255,255,0.8)',
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600',
+    fontFamily: 'Lato-Regular',
     marginBottom: 8,
   },
   summaryAmount: {
     color: '#fff',
     fontSize: 32,
     fontWeight: '700',
+    fontFamily: 'Lato-Bold',
   },
   summaryIcon: {
     backgroundColor: 'rgba(255,255,255,0.2)',
@@ -291,9 +292,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 4,
+    fontFamily: 'Lato-Bold',
   },
   manageButtonSubtitle: {
-    fontSize: 13,
+    fontSize: 12,
+    fontFamily: 'Lato-Regular',
   },
   listHeader: {
     flexDirection: 'row',
@@ -304,6 +307,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
+    fontFamily: 'Lato-Bold',
   },
   addButton: {
     flexDirection: 'row',
@@ -317,6 +321,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 13,
     fontWeight: '600',
+    fontFamily: 'Lato-Regular',
   },
   listContent: {
     paddingBottom: 20,
@@ -367,10 +372,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 8,
+    fontFamily: 'Lato-Bold',
   },
   emptySubText: {
     fontSize: 14,
     textAlign: 'center',
+    fontFamily: 'Lato-Regular',
   },
   // Modal Styles
   modalOverlay: {
@@ -394,6 +401,12 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: '700',
+    fontFamily: 'Lato-Bold',
+  },
+  closeButton: {
+    padding: 8,
+    borderRadius: 20,
+    borderWidth: 1,
   },
   formGroup: {
     marginBottom: 20,
@@ -402,6 +415,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     marginBottom: 8,
+    fontFamily: 'Lato-Regular',
   },
   inputContainer: {
     flexDirection: 'row',
@@ -414,6 +428,7 @@ const styles = StyleSheet.create({
   currencyPrefix: {
     fontSize: 18,
     fontWeight: '600',
+    fontFamily: 'Lato-Bold',
     marginRight: 8,
   },
   input: {
@@ -435,6 +450,7 @@ const styles = StyleSheet.create({
   typeText: {
     fontSize: 14,
     fontWeight: '500',
+    fontFamily: 'Lato-Regular',
   },
   saveButton: {
     height: 50,
@@ -447,6 +463,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+    fontFamily: 'Lato-Bold',
   },
 });
 

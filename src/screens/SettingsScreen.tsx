@@ -96,7 +96,7 @@ const SettingsItem: React.FC<SettingsItemProps> = ({
     activeOpacity={0.7}
   >
     <View style={styles.itemLeft}>
-      <Icon size={22} color={colors.text} strokeWidth={1.5} />
+      <Icon size={20} color={colors.text} strokeWidth={1.5} />
       <Text style={[styles.itemLabel, { color: textColor || colors.text }]}>{label}</Text>
     </View>
     
@@ -243,8 +243,8 @@ const SettingsScreen = () => {
         <SettingsSection title="Help & Support" colors={colors} styles={styles}>
           <SettingsItem 
             icon={Mail} 
-            label="Contact Support" 
-            onPress={() => Alert.alert('Contact Support', 'support@moniqa.app')} 
+            label="Help & Support" 
+            onPress={() => navigation.navigate('HelpSupport')} 
             colors={colors}
             styles={styles}
           />
@@ -514,6 +514,7 @@ export const createStyles = (colors: typeof Colors.light) => StyleSheet.create({
   headerTitle: {
     fontSize: 34, // Larger title to match iOS/Reference style
     fontWeight: 'bold',
+    fontFamily: 'Lato-Bold',
   },
   content: {
     padding: 20,
@@ -525,6 +526,7 @@ export const createStyles = (colors: typeof Colors.light) => StyleSheet.create({
   sectionTitle: {
     fontSize: 14,
     fontWeight: '600',
+    fontFamily: 'Lato-Bold',
     textTransform: 'uppercase',
     marginBottom: 8,
     marginLeft: 12, // Slight indent for section title
@@ -548,8 +550,9 @@ export const createStyles = (colors: typeof Colors.light) => StyleSheet.create({
     gap: 16,
   },
   itemLabel: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '500',
+    fontFamily: 'Lato-Regular',
   },
   itemRight: {
     flexDirection: 'row',
@@ -566,6 +569,7 @@ export const createStyles = (colors: typeof Colors.light) => StyleSheet.create({
   },
   versionText: {
       fontSize: 14,
+      fontFamily: 'Lato-Regular',
   },
   
   // Modal Styles
@@ -636,8 +640,9 @@ export const createStyles = (colors: typeof Colors.light) => StyleSheet.create({
     marginBottom: 24,
   },
   label: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: '500',
+    fontFamily: 'Lato-Regular',
     marginBottom: 12,
   },
   input: {

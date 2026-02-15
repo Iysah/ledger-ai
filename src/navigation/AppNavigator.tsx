@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, useColorScheme } from 'react-native';
 import { Home, Plus, BarChart3, Settings, MessageSquare, ChartPie, Sparkles, NotebookPen } from 'lucide-react-native';
 import { Colors } from '../constants/colors';
+import { FONTS } from '../constants/fonts';
 
 // Screens
 import ExpenseListScreen from '../screens/ExpenseListScreen';
@@ -22,6 +23,7 @@ import CategoryBudgetsScreen from '../screens/settings/CategoryBudgetsScreen';
 import CategoryScreen from '../screens/settings/CategoriesScreen';
 import PremiumScreen from '../screens/settings/PremiumScreen';
 import AboutScreen from '../screens/settings/AboutScreen';
+import HelpSupportScreen from '../screens/settings/HelpSupportScreen';
 import { getHasSeenOnboarding } from '../utils/storage';
 
 const Stack = createNativeStackNavigator();
@@ -50,6 +52,9 @@ const MainTabs = () => {
         },
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textSecondary,
+        tabBarLabelStyle: {
+          fontFamily: FONTS.regular,
+        }
       }}
     >
       <Tab.Screen
@@ -130,6 +135,7 @@ const AppNavigator = () => {
           contentStyle: {
             backgroundColor: colors.background,
           },
+          
         }}
       >
         <Stack.Screen
@@ -195,6 +201,14 @@ const AppNavigator = () => {
           component={AboutScreen}
           options={{ 
             title: 'About Monitrac',
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="HelpSupport"
+          component={HelpSupportScreen}
+          options={{ 
+            title: 'Help & Support',
             headerShown: false,
           }}
         />

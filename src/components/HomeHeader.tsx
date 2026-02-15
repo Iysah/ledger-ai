@@ -42,11 +42,13 @@ const styles = StyleSheet.create({
   dayText: {
     fontSize: 28,
     fontWeight: '700',
+    fontFamily: 'Lato-Bold',
     marginBottom: 4,
   },
   dateText: {
     fontSize: 14,
     fontWeight: '500',
+    fontFamily: 'Lato-Regular',
   },
   profileButton: {
     padding: 10,

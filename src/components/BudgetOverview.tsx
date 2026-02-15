@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 12,
     fontWeight: '600',
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'Lato-Bold',
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '600',
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'Lato-Bold',
     marginBottom: 8,
     textTransform: 'uppercase',
     letterSpacing: 1,
